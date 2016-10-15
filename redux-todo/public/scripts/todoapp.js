@@ -88,13 +88,32 @@ let FilterLink = ({
 	}}> {children} </ReactBootstrap.Button>
 };
 
-let FilterLinks = ({visibilityFilter}) => {
-	return <ReactBootstrap.ButtonGroup>
-		<FilterLink filter='SHOW_ALL' currentFilter={visibilityFilter}>All</FilterLink>
-		<FilterLink filter='SHOW_ACTIVE' currentFilter={visibilityFilter}>Active</FilterLink>
-		<FilterLink filter='SHOW_COMPLETED' currentFilter={visibilityFilter}>Completed</FilterLink>						
-	</ReactBootstrap.ButtonGroup>;
+class FilterLinks extends Component {
+	// shouldComponentUpdate(nextProps, nextState){
+	// 	console.log('should component update');
+	// 	return false;
+	// }
+
+	render(){
+		const { visibilityFilter } = this.props;
+		console.log('RENDERING FOOTER');
+
+		return <ReactBootstrap.ButtonGroup>
+			<FilterLink filter='SHOW_ALL' currentFilter={visibilityFilter}>All</FilterLink>
+			<FilterLink filter='SHOW_ACTIVE' currentFilter={visibilityFilter}>Active</FilterLink>
+			<FilterLink filter='SHOW_COMPLETED' currentFilter={visibilityFilter}>Completed</FilterLink>						
+		</ReactBootstrap.ButtonGroup>;
+	}
 };
+
+let Footer = ({}) => {
+	return (
+		<div>
+			<ReactBootstrap.Button>Clear All</ReactBootstrap.Button>
+			<FilterLinks />
+		</div>
+	);
+}
 
 let getVisibleTodos = (todos, filter) => {
 	switch(filter){
@@ -144,8 +163,45 @@ var AddTodo = ({onAddClick}) => {
 		<ReactBootstrap.Button  onClick={ () => {
 			onAddClick(input.value);
 			input.value = '';
+			input.focus();
 		}}>Add Todo</ReactBootstrap.Button>
 	</ReactBootstrap.FormGroup></ReactBootstrap.Form>);	
+}
+
+class VisibleTodoList extends Component {
+	// When component is about to load
+	componentDidMount(){
+		const store = this.props.store;		
+		this.unsubscribe = store.subscribe( () => {
+			this.forceUpdate();
+		})
+	}
+
+	// When component goes out of scope
+	componentWillUnmount(){
+		this.unsubscribe();
+	}
+
+	render(){
+		const store = this.props.store;
+		let state = store.getState();
+
+		let todos = getVisibleTodos( state.todos, state.visibilityFilter );
+
+		return (
+			<TodoList todos={ todos } visibilityFilter={ state.visibilityFilter } removeTodo={ (id) => {
+				store.dispatch({
+					type: ACTION_REMOVE_TODO,
+					id: id
+				})
+			}} toggleTodo={ (id) => {
+				store.dispatch({
+					type: ACTION_TOGGLE_TODO,
+					id: id
+				})
+			}}/>	
+		)
+	}
 }
 
 let TodoApp = ({todos, visibilityFilter}) => {
@@ -159,29 +215,30 @@ let TodoApp = ({todos, visibilityFilter}) => {
 		})
 	}
 
-	let toggleTodo = function(id){
-		store.dispatch({
-			type: ACTION_TOGGLE_TODO,
-			id: id
-		})
-	}
-
-	let removeTodo = function(id){
-		store.dispatch({
-			type: ACTION_REMOVE_TODO,
-			id: id
-		})
-	}
-
 	let filteredTodos = getVisibleTodos( todos, visibilityFilter );			
 	return (			
 		<div>	
 			<AddTodo onAddClick={ addTodo } />
 			<hr/>
-			<TodoList todos={ filteredTodos } visibilityFilter={visibilityFilter} removeTodo={ removeTodo} toggleTodo={ toggleTodo}/>
+			<VisibleTodoList store={store} />
 			<FilterLinks visibilityFilter={visibilityFilter} />
 		</div>
 	);	
+}
+
+class Provider extends Component{
+	getChildContext(){
+		return {
+			store: this.props.store
+		}
+	}
+
+	render(){
+		return this.props.children;
+	}
+}
+Provider.childContextTypes = {
+	store: React.PropTypes.object
 }
 
 const render = () => {	
@@ -191,54 +248,13 @@ const render = () => {
 	// }
 
 	ReactDOM.render(
-		<ReactBootstrap.Panel>
-			{/*<TodoApp {...store.getState()} /> */}
-			<TodoApp {...store.getState()} />
-		</ReactBootstrap.Panel>
+		<Provider store={{}}>
+			<ReactBootstrap.Panel>
+				{/*<TodoApp {...store.getState()} /> */}
+				<TodoApp {...store.getState()} />
+			</ReactBootstrap.Panel>
+		</Provider>
 	, document.getElementById('content'));
 };
 store.subscribe(render);
 render();
-
-//store.dispatch({type: ACTION_ADD_TODO, id: nextTodoId++, text: 'Text'});
-
-// Testing Todo functions here
-
-// const addTodo = (id, text) => {
-// 	return {
-// 		type: ACTION_ADD_TODO,
-// 		id: id,
-// 		text: text		
-// 	}
-// };
-
-// const testTodos = () => {
-// 	const stateBefore = [];
-// 	const action1 = addTodo(0, 'Learn Redux');
-// 	const action2 = addTodo(1, 'Another todo');
-
-// 	const stateAfter = [
-// 		{
-// 			id: 0,
-// 			text: 'Learn Redux',
-// 			completed: false
-// 		},
-// 		{
-// 			id: 1,
-// 			text: 'Another todo',
-// 			completed: false
-// 		}
-// 	];
-	
-// 	var state1 = todos({}, action1);
-// 	console.log('1st State', state1);
-
-// 	var state2 = todos(state1, action2);
-// 	console.log('2nd State', state2);
-
-// 	expect(store.getState()).toEqual(stateAfter);
-
-// 	console.log('Final state', store.getState() );
-// }
-// testTodos();
-// console.log('All tests passed');
