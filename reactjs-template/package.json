@@ -1,7 +1,7 @@
 {
-  "name": "github-battle",
+  "name": "reactjs-template",
   "version": "1.0.0",
-  "description": "React demo",
+  "description": "ReactJS Basic App Template",
   "main": "index.js",
   "scripts": {
     "production": "webpack -p",

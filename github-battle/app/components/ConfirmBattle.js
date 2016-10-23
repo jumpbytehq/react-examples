@@ -7,7 +7,7 @@ var UserProfile = require('./UserProfile');
 var ConfirmBattle = function({isLoading, playerInfo, playerOne, playerTwo, startBattle}){
 	var header = (
 		<div className="jumbotron col-sm-6 col-sm-offset-3 text-center" style={Object.assign(transparentBg, noBottomPadding)}>
-			<h1>Confirm Battle!!!</h1>				
+			<h1>Confirm Players!!!</h1>				
 			<hr/>
 		</div>
 	);

@@ -5,13 +5,13 @@ require('../main.css');
 var Main = React.createClass({
 	render: function(){
 		return (
-			<div className="main-container">				
+			<div className="main-container">			
 				<ReactCSSTransitionGroup
 					transitionName='appear'
 					transitionEnterTimeout={300}
 					transitionLeaveTimeout={300}
-					>
-					{React.cloneElement(this.props.children, {key: this.props.location.pathname})}
+					>					
+					{React.cloneElement(this.props.children, {key: this.props.location.pathname})}					
 				</ReactCSSTransitionGroup>
 			</div>
 		);
