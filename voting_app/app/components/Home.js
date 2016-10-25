@@ -8,7 +8,7 @@ const ProductListContainer = require('../containers/ProductListContainer');
 const Home = React.createClass({
 	render: function(){
 		return (
-			<div style={transparentBg}>
+			<div style={transparentBg} className="ui raised very padded text container segment">
 				<h1 className="ui center aligned icon header">Popular Products</h1>
 				<hr/>
 				<ProductListContainer />

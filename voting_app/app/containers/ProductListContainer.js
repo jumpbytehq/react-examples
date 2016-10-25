@@ -6,7 +6,8 @@ var data = require('../utils/data');
 var ProductListContainer = React.createClass({
 	getInitialState: function(){
 		return {
-			products: []
+			products: [],
+			sortOrder: 0
 		}
 	},
 
@@ -14,11 +15,24 @@ var ProductListContainer = React.createClass({
 		this.updateState();		
 	},
 
-	updateState: function(){
+	updateState: function(toggleSort){
+		var newOrder = 0;
+		if(toggleSort === true){
+			newOrder = this.state.sortOrder === 0 ? 1 : 0;
+		}
+
 		const sortedProducts = data.products.sort((a,b)=>{
-			return b.votes - a.votes;
+			if(newOrder == 0){
+				return b.votes - a.votes;
+			}else{
+				return a.votes - b.votes;
+			}			
 		});
-		this.setState({ products: sortedProducts });
+
+		this.setState({ 
+			products: sortedProducts,
+			sortOrder: newOrder
+		});
 	},
 
 	handleUpVote: function(id){
@@ -29,6 +43,10 @@ var ProductListContainer = React.createClass({
 			}
 		});
 		this.updateState();
+	},
+
+	handleToggleSort: function(evt){
+		this.updateState(true);
 	},
 
 	handleDownVote: function(id){
@@ -43,7 +61,11 @@ var ProductListContainer = React.createClass({
 
 	render: function(){
 		return (
-			<ProductList products={this.state.products} onUpVote={this.handleUpVote} onDownVote={this.handleDownVote}/>
+			<ProductList products={this.state.products} 
+						onUpVote={this.handleUpVote} 
+						onDownVote={this.handleDownVote} 
+						sortOrder={this.state.sortOrder}
+						onToggleSort={this.handleToggleSort}/>
 		);
 	}
 });
