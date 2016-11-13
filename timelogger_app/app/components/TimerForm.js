@@ -11,6 +11,7 @@ var TimerForm = React.createClass({
 		this.props.updateTimer(title, project);
 	},
 
+	
 	render: function(){
 		const submitText = this.props.title ? 'Update' : 'Create';
 
@@ -28,16 +29,18 @@ var TimerForm = React.createClass({
 					  		<input type='text' defaultValue={this.props.project} ref={e => this.projectInput = e}/> 
 					  	</div>
 						
-						<div className='ui two bottom attached buttons'>
-							<button className='ui basic blue button' onClick={this.handleUpdate}>
-								{submitText}
-							</button>
-							<button className='ui basic red button' onClick={this.props.onEditToggle}>
-								Cancel
-							</button>
-						</div>
+						
 			        </div>
 			    </div>
+
+			    <div className='ui two bottom attached buttons'>
+					<button className='ui basic blue button' onClick={this.handleUpdate}>
+						{submitText}
+					</button>
+					<button className='ui basic red button' onClick={this.props.onEditToggle}>
+						Cancel
+					</button>
+				</div>
 			</div>
 		);
 	}

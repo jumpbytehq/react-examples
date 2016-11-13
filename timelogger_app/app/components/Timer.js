@@ -1,11 +1,20 @@
 var React = require('react');
+var utils = require('../utils/utils');
 
-var StartStopFooter = ({onStart}) => {
-	return (
-		<div className='ui bottom attached blue basic button' onClick={onStart}>
-			Start
-        </div>
-	);
+var StartStopFooter = ({isStart, toggleStart}) => {
+	if(isStart){
+		return (
+			<div className='ui bottom attached red basic button' onClick={toggleStart}>
+				Stop
+	        </div>
+		)
+	}else{
+		return (
+			<div className='ui bottom attached blue basic button' onClick={toggleStart}>
+				Start
+	        </div>
+		);
+	}	
 };
 
 var DeleteFooter = ({onDelete, onCancel}) => {
@@ -24,7 +33,8 @@ var DeleteFooter = ({onDelete, onCancel}) => {
 var Timer = React.createClass({
 	getInitialState: function(){
 		return {
-			showDelete: false
+			showDelete: false,
+			isStart: false
 		};
 	},
 
@@ -41,15 +51,17 @@ var Timer = React.createClass({
 	},
 
 	handleStart: function(e){
-		
+		this.setState({
+			isStart: !this.state.isStart
+		})
 	},
 
 	confirmDelete: function(e){
-		this.props.deleteTimer();
+		this.props.deleteTimer(this.props.id);
 	},
 
 	render: function(){		
-		const elapsedString = this.props.elapsed + "";
+		const elapsedString = utils.millisecondsToTime(this.props.elapsed);
 
 		return (
 			<div className='ui centered card'>
@@ -79,7 +91,7 @@ var Timer = React.createClass({
 		          	</div>
 		        </div>
 
-		        {!this.state.showDelete ? <StartStopFooter onStart={this.handleStart}/> : <DeleteFooter onDelete={this.confirmDelete} onCancel={this.toggleDelete} />}
+		        {!this.state.showDelete ? <StartStopFooter isStart={this.state.isStart} toggleStart={this.handleStart}/> : <DeleteFooter onDelete={this.confirmDelete} onCancel={this.toggleDelete} />}
 		      </div>
 		);
 	}
